@@ -1,17 +1,13 @@
+import math
+from time import time
+
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torchvision
-import torchvision.transforms as transforms
 import torch.optim as optim
-import matplotlib.pyplot as plt
-import numpy as np
-
-import math
+import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import ImageFolder
-from pytorch_model_summary import summary
-from time import time
 
 
 # create basic convolutional neural network
@@ -39,7 +35,7 @@ class MyNet(nn.Module):
             nn.Conv2d(128, 256, kernel_size=3, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
-        ).to(device)
+        ).to(setDevice())
 
         # nn.Dropout(0.25),
         # nn.Dropout(0.5),
@@ -48,7 +44,7 @@ class MyNet(nn.Module):
             nn.Linear(4096, 256),
             nn.ReLU(),
             nn.Linear(256, 15)
-        ).to(device)
+        ).to(setDevice())
 
     def forward(self, value):
         value = self.model(value)
@@ -81,7 +77,7 @@ class DropMyNet(nn.Module):
             nn.Conv2d(128, 256, kernel_size=3, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
-        ).to(device)
+        ).to(setDevice())
 
         # nn.Dropout(0.25),
         # nn.Dropout(0.5),
@@ -92,7 +88,7 @@ class DropMyNet(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.45),
             nn.Linear(256, 15)
-        ).to(device)
+        ).to(setDevice())
 
     def forward(self, value):
         value = self.model(value)
@@ -134,24 +130,24 @@ class ResidualMyNet(nn.Module):
 
         # conv2
         res2 = out
-        out += res1
+        out = out + res1
         out = self.conv2(out)
         out = self.relu2(out)
 
         # conv3
         res3 = out
-        out += res2
+        out = out + res2
         out = self.conv3(out)
         out = self.relu3(out)
 
         # conv4
         res4 = out
-        out += res3
+        out = out + res3
         out = self.conv4(out)
         out = self.relu4(out)
 
         # conv5
-        out += res4
+        out = out + res4
         out = self.conv5(out)
         out = self.relu5(out)
 
@@ -203,24 +199,24 @@ class DropResidualMyNet(nn.Module):
 
         # conv2
         res2 = out
-        out += res1
+        out = out + res1
         out = self.conv2(out)
         out = self.relu2(out)
 
         # conv3
         res3 = out
-        out += res2
+        out = out + res2
         out = self.conv3(out)
         out = self.relu3(out)
 
         # conv4
         res4 = out
-        out += res3
+        out = out + res3
         out = self.conv4(out)
         out = self.relu4(out)
 
         # conv5
-        out += res4
+        out = out + res4
         out = self.conv5(out)
         out = self.relu5(out)
 
@@ -248,7 +244,7 @@ def defineTransforms():
             transforms.CenterCrop(128),
 
             transforms.ToTensor(),
-            transforms.Normalize([0.5, 0.5, 0.5],[0.5, 0.5, 0.5])
+            transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ]
     )
     return transform
@@ -279,7 +275,7 @@ def loadData(testPercent, batchSize, dataset):
 
 def setDevice():
     # set device
-    device=None
+    device = None
     if torch.cuda.is_available():
         device = torch.device("cuda")
     else:
@@ -318,7 +314,6 @@ def Train(epoch, model, print_every, trainData, criterion, device, optimizer):
         # output of model
         moutput = model(minput)
 
-
         # computing the cross entropy loss
         loss = criterion(moutput, target)
         totalLoss += loss.item()
@@ -336,7 +331,10 @@ def Train(epoch, model, print_every, trainData, criterion, device, optimizer):
         accuracy.append((target == argmax).sum().item() / target.shape[0])
 
         if i % print_every == 0:
-            print('Epoch: {}, Train Loss: {:.4f}, Accuracy: {:.2f}, Time: {:.2f} sec'.format(epoch, loss.item(), sum(accuracy) / len(accuracy), time() - start))
+            print('Epoch: {}, Train Loss: {:.4f}, Accuracy: {:.2f}, Time: {:.2f} sec'.format(epoch, loss.item(),
+                                                                                             sum(accuracy) / len(
+                                                                                                 accuracy),
+                                                                                             time() - start))
     # Returning Average Training Loss and Accuracy
     return totalLoss / len(trainData), sum(accuracy) / len(accuracy)
 
@@ -359,13 +357,15 @@ def Test(epoch, model, epochBased, testData, criterion, device):
             loss = criterion(moutput, target)
             totalLoss += loss.item()
 
-
             argmax = moutput.argmax(dim=1)
             # Find the accuracy of the batch by comparing it with actual targets
             accuracy.append((target == argmax).sum().item() / target.shape[0])
 
     if epochBased:
-        print('Epoch: [{}], Test Loss: {:.4f}, Accuracy: {:.2f}, Time: {:.2f} sec'.format(epoch, totalLoss / len(testData), sum(accuracy) / len(accuracy), time() - start))
+        print('Epoch: [{}], Test Loss: {:.4f}, Accuracy: {:.2f}, Time: {:.2f} sec'.format(epoch,
+                                                                                          totalLoss / len(testData),
+                                                                                          sum(accuracy) / len(accuracy),
+                                                                                          time() - start))
     # Returning Average Testing Loss and Accuracy
     return totalLoss / len(testData), sum(accuracy) / len(accuracy)
 
@@ -400,8 +400,8 @@ def testingModel(epoch, model, testData, criterion, device):
 
 
 def plotting(train, test, text, batch, lr, status):
-    plt.plot(range(1, len(train)+1), train, 'r', label="Train {}".format(text))
-    plt.plot(range(1, len(test)+1), test, 'b', label="Test {}".format(text))
+    plt.plot(range(1, len(train) + 1), train, 'r', label="Train {}".format(text))
+    plt.plot(range(1, len(test) + 1), test, 'b', label="Test {}".format(text))
 
     plt.title(f"{batch} Batch and {lr} Learning Rate {status}")
     plt.xlabel('Epoch')
@@ -434,7 +434,9 @@ def main():
     model, criterion, optimizer = initModel(True, device, "", learningRate)
 
     # main training loop for model
-    trainLosses, testLosses, trainAccuracies, testAccuracies = epochLoop(epochNumber, model, trainData, testData, criterion, device, optimizer, batchSize, learningRate)
+    trainLosses, testLosses, trainAccuracies, testAccuracies = epochLoop(epochNumber, model, trainData, testData,
+                                                                         criterion, device, optimizer, batchSize,
+                                                                         learningRate)
 
     # SAVING NUMPY ARRAYS OF TRAIN and TEST RESULTS TO DRAW GRAPHS LATER, COMMENTED FOR NOW
     # np.save(f"./arrays/res_0.45_loss_test_batch-{batchSize}_lr-{learningRate}.npy", testLosses)
@@ -452,4 +454,5 @@ def main():
     # plotting(trainAcc, testAcc, "Loss", 64, 0.0005, "With Residual and 0.60 Dropout")
 
 
-main()
+if __name__ == '__main__':
+    main()
