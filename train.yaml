@@ -4,15 +4,13 @@ data:
   validation_set_length: 0.1
 
 train:
+  model: BaseNet
   device: "cuda"
   learning_rate: 0.001
-  epochs: 10
+  epochs: 2
   batch_size: 16
+  print_every: 100
 
-logging:
-    directory: "experiments"
-    sub_directory: "Experiment 1"
-    model_name: "BaseNet"
   
 model: 
   save_directory: "models"

@@ -11,10 +11,12 @@ class ConfigurationClass:
 @dataclass
 class TrainConfiguration(ConfigurationClass):
     """ Train hyperparameters dto"""
+    model: str
     device: str
     learning_rate: float
     epochs: int
     batch_size: int
+    print_every: int
     
     def __init__(self, cfg: dict) -> None:
         super().__init__(cfg)
@@ -30,16 +32,6 @@ class DatasetConfiguration(ConfigurationClass):
     def __init__(self, cfg: dict) -> None:
         super().__init__(cfg)
 
-@dataclass    
-class LoggingConfiguration(ConfigurationClass):
-    """ Logging Configuration dto"""
-    directory: str 
-    sub_directory: str
-    model_name: str
-        
-    def __init__(self, cfg: dict) -> None:
-        super().__init__(cfg)
-    
 @dataclass    
 class ModelSaveConfiguration(ConfigurationClass):
     """ Model Sacing Configuration dto"""
