@@ -1,0 +1,4 @@
+parameters:
+  img_input: "image.png"
+  img_oputput: "output.png"
+  model: "./models/BaseNet_1_2.pth"
