@@ -1,4 +1,5 @@
 parameters:
   img_input: "image.png"
   img_oputput: "output.png"
+  device: cuda
   model: "./models/BaseNet_1_2.pth"

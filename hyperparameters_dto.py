@@ -47,7 +47,8 @@ class InferenceConfiguration(ConfigurationClass):
     """ Inference Parameters dto"""
     img_input: str
     img_output: str
+    device: str 
     model: str
-    
+       
     def __init__(self, cfg: dict) -> None:
         super().__init__(cfg)
